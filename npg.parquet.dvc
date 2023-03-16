@@ -1,0 +1,5 @@
+outs:
+- md5: 2d01a4751216618951a40d662d88905e.dir
+  size: 14357831212
+  nfiles: 356
+  path: npg.parquet
