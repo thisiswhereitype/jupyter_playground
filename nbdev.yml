@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "jupyter_playground"
+  site-url: "https://thisiswhereitype.github.io/jupyter_playground"
+  description: "A repository for playing with python"
+  repo-branch: master
+  repo-url: "https://github.com/thisiswhereitype/jupyter_playground"
