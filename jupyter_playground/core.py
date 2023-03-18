@@ -37,21 +37,22 @@ class MemoryStandin:
 
 
 # %% ../00_core.ipynb 7
-if __name__ != "__main__":
-    if sys.platform == "linux":
-        cache = joblib.Memory(
-            "/mnt/d/.joblib", verbose=0, compress=True, bytes_limit=int(200e9)
-        )
-    if sys.platform == "win32":
-        cache = joblib.Memory(
-            "D:\.joblib", verbose=0, compress=True, bytes_limit=int(200e9)
-        )
-    cache.reduce_size()
-else:
-    if in_jupyter():
-        cache = joblib.Memory(verbose=1, compress=True)
+try:
+    if __name__ != "__main__":
+        if sys.platform == "linux":
+            cache = joblib.Memory(
+                "/mnt/d/.joblib", verbose=0, compress=True, bytes_limit=int(200e9)
+            )
+        if sys.platform == "win32":
+            cache = joblib.Memory(
+                "D:\.joblib", verbose=0, compress=True, bytes_limit=int(200e9)
+            )
+        cache.reduce_size()
     else:
-        cache = MemoryStandin()
+            cache = joblib.Memory(verbose=1, compress=True)
+except OSError:
+    # avoid caching when something goes wrong
+    cache = MemoryStandin()
 
 
 # %% ../00_core.ipynb 9
