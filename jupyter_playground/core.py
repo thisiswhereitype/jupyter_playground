@@ -16,12 +16,12 @@ from fastcore.all import *
 from tqdm import tqdm
 
 
-# %% ../00_core.ipynb 4
+# %% ../00_core.ipynb 5
 @dataclasses.dataclass
 class DownloadContent:
     """
-    Masks the repr with it's hash to avoid serialising the content.
-    This stops libraries like joblib serialising large strings in input reprs
+    Masks the __repr__ with the content's hash to avoid serialising a large string.
+    This is useful to stop joblib serialising large json files.
     """
 
     content: bytes
@@ -30,13 +30,13 @@ class DownloadContent:
         return joblib.hash(self.content)
 
 
-# %% ../00_core.ipynb 5
-class Standin:
+# %% ../00_core.ipynb 6
+class MemoryStandin:
     def cache(self, func):
         return func
 
 
-# %% ../00_core.ipynb 6
+# %% ../00_core.ipynb 7
 if __name__ != "__main__":
     if sys.platform == "linux":
         cache = joblib.Memory(
@@ -51,10 +51,10 @@ else:
     if in_jupyter():
         cache = joblib.Memory(verbose=1, compress=True)
     else:
-        cache = Standin()
+        cache = MemoryStandin()
 
 
-# %% ../00_core.ipynb 7
+# %% ../00_core.ipynb 9
 @cache.cache
 def attachment_download(href):
     res = rq.get(href)
@@ -62,12 +62,12 @@ def attachment_download(href):
     return DownloadContent(res.content)
 
 
-# %% ../00_core.ipynb 8
+# %% ../00_core.ipynb 10
 class IncrementalPipeline:
     """
     A class whose instances can dynamically store functions.
-    When used as a callable passes each stages retunred object as args into each successive function.
-    Results are wrapped if needed.
+    When used as a callable i.e. `pipe(*args)` the functions are called in turn and returned objects
+    are passed as args into each successive function. Results are wrapped as tuples if needed.
     """
 
     def __init__(self, name: str, funcs: List[Callable] = None) -> None:
@@ -92,13 +92,11 @@ class IncrementalPipeline:
     def __call__(
         self,
         *args: list[Any],
-        tqdm_position: int = 0,
+        tqdm_position: int | None = 0,
         **init_kwargs: dict[Any, Any],
     ):
         try:
-            for i, f in tqdm(
-                enumerate(self._funcs), leave=None, position=tqdm_position
-            ):
+            for i, f in tqdm(enumerate(self._funcs), leave=False, position=tqdm_position):
                 if not i:
                     res = f(*args, **init_kwargs)
                 else:

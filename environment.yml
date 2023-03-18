@@ -4,8 +4,6 @@ channels:
   - conda-forge
 dependencies:
   - black
-  - dask
-  - dvc
   - fastcore
   - ipykernel
   - ipywidgets
@@ -15,11 +13,9 @@ dependencies:
   - nbdev=2.*
   - pandapower
   - pandas=1.*
-  # - platformdirs>=3.1 # pinned until dvc fixes feedsstock
   - pyarrow=11.*
   - python-benedict
   - python=3.11
-  - scienceplots
   - seaborn
   - sympy
   - tqdm

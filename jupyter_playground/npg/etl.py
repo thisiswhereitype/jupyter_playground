@@ -9,7 +9,6 @@ import json
 import zipfile
 from typing import Callable
 
-# import more_itertools as mit
 import pandas as pd
 import requests as rq
 from fastcore.all import *
@@ -46,7 +45,7 @@ files.map(lambda x: x[-10:])
 pipe = core.IncrementalPipeline("npg_etl", funcs=[core.attachment_download])
 pipe
 
-# %% ../../10_npg_data.ipynb 11
+# %% ../../10_npg_data.ipynb 13
 @cache.cache
 def parse_attachment_content(
     Download: DownloadContent, max_file_size: Union[int, float] = 4e9
@@ -70,7 +69,7 @@ def parse_attachment_content(
 
 pipe.append_func(parse_attachment_content)
 
-# %% ../../10_npg_data.ipynb 13
+# %% ../../10_npg_data.ipynb 17
 _cat_cols = ["substation", "circuit", "unit", "description"]
 
 
@@ -86,7 +85,7 @@ def build_attachment_dataframe(text: DownloadContent) -> pd.DataFrame:
         .assign(unit=lambda d: d.unit.replace(r"^\s*$", "deg", regex=True))
         .set_index(_cat_cols)
         .groupby(_cat_cols, sort=False)  # no sort for performance
-        .apply(lambda d: pd.json_normalize(d.iat[0, -1]))  # run the normalise
+        .apply(lambda d: pd.json_normalize(d.iat[0, -1]))  # normalise another tier for each row
         .reset_index(-1, drop=True)  # discard index from second parse
         .reset_index(drop=False)  # clear rest
         .assign(  # fix up types
@@ -95,11 +94,11 @@ def build_attachment_dataframe(text: DownloadContent) -> pd.DataFrame:
             yyyy_mm=lambda d: d.timestamp.dt.strftime("%Y-%m"),
         )
     )
-    d = df.yyyy_mm.value_counts()  # remove values from neighbour months
+    d = df.yyyy_mm.value_counts()  # remove values from neighboring months
     if len(d) != 1:
-        print(text, d.__repr__())  # log these for reference
+        print(text, '\n' + d.__repr__())  # log these for reference
 
-    df[_cat_cols] = df[_cat_cols].astype("category")  # categorise
+    df[_cat_cols] = df[_cat_cols].astype("category")
     return df[d.index[d.argmax()] == df.yyyy_mm]
 
 

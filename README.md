@@ -27,14 +27,13 @@ pip install -e jupyter_playground
 Some features:
 
 ``` python
-import jupyter_playground.core as core
-
 print(core.IncrementalPipeline.__doc__)
 ```
 
 
-            A class whose instances can dynamically store functions.
-            When used as a callable passes each stages return as args into each successive function.
+        A class whose instances can dynamically store functions.
+        When used as a callable passes each stages retunred object as args into each successive function.
+        Results are wrapped if needed.
         
 
 ``` python
@@ -42,6 +41,6 @@ print(core.DownloadContent.__doc__)
 ```
 
 
-            Masks the repr with it's hash to avoid serialising the content.
-            This stops libraries like joblib serialising large strings in input reprs
+        Masks the repr with it's hash to avoid serialising the content.
+        This stops libraries like joblib serialising large strings in input reprs
         
